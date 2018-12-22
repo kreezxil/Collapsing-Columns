@@ -1,8 +1,30 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
 .gradle
-build/
 
-# Ignore Gradle GUI config
-gradle-app.setting
+# other
+eclipse
+run
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
+*.properties
+
+gradle/wrapper/
+
+gradlew
+
+gradlew\.bat
