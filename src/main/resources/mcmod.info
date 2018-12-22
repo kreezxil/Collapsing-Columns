@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "nopoles",
+  "name": "No Poles",
+  "description": "Prevents the building of poles via the jump place action.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["Kreezxil"],
+  "credits": "Gigabit101 for the original 1.7.10 version that never got updated.",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
