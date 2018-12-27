@@ -13,14 +13,18 @@ public class PoleHandler {
 	public static void msg(String msg) {
 		System.out.println(msg);
 	}
-	
+
 	@SubscribeEvent
 	public static void NoColumns(PlaceEvent event) {
+
 		EntityPlayer player = event.getPlayer();
-		if ((!player.onGround) && (!player.capabilities.allowFlying)) {
-			event.getPlacedBlock().getBlock().dropBlockAsItem(event.getWorld(), event.getPos(), event.getState(), 0);
-			event.getWorld().setBlockToAir(event.getPos());
-		}
+
+		if (player.onGround || player.isInWater() || player.isOnLadder() || player.capabilities.allowFlying)
+			return;
+
+		event.getPlacedBlock().getBlock().dropBlockAsItem(event.getWorld(), event.getPos(), event.getState(), 0);
+		event.getWorld().setBlockToAir(event.getPos());
+
 	}
 
 }
