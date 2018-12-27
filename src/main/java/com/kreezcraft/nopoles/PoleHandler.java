@@ -12,15 +12,15 @@ public class PoleHandler {
 
 	@SubscribeEvent
 	public static void NoColumns(PlaceEvent event) {
+		
 		EntityPlayer player = event.getPlayer();
-		if ((!player.onGround) && (!player.capabilities.allowFlying)) {
-			event.getPlacedBlock().getBlock().dropBlockAsItem(event.getWorld(), event.getPos(), event.getState(), 0);
-			event.getWorld().setBlockToAir(event.getPos());
-//			EntityItem theBlock = new EntityItem(event.getWorld(), player.getPosition().getX(),
-//					player.getPosition().getY(), player.getPosition().getZ(),
-//					new ItemStack(event.getPlacedBlock().getBlock()));
-//			event.getWorld().spawnEntity(theBlock);
-		}
+
+		if (player.onGround || player.isOnLadder() || player.capabilities.allowFlying || player.isInWater())
+			return;
+
+		event.getPlacedBlock().getBlock().dropBlockAsItem(event.getWorld(), event.getPos(), event.getState(), 0);
+		event.getWorld().setBlockToAir(event.getPos());
+
 	}
 
 }
