@@ -1,6 +1,9 @@
 package com.kreezcraft.nopoles;
 
+import java.util.Arrays;
+
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -28,6 +31,11 @@ public class PoleHandler {
 		double d1 = position.getY();
 		double d2 = position.getZ();
 		Block block = event.getPlacedBlock().getBlock();
+		IBlockState blockstate = world.getBlockState(position);
+		
+		//System.out.println("Block being placed is "+block.getRegistryName().toString()+":"+block.getMetaFromState(blockstate));
+		if(Arrays.asList(PoleConfig.whitelist.blocks).contains(block.getRegistryName().toString()+":"+block.getMetaFromState(blockstate))) return;
+		
 		ItemStack stack = new ItemStack(Item.getItemFromBlock(block));
 		EntityItem haha = new EntityItem(world, d0, d1 ,d2, stack);
 		
