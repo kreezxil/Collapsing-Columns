@@ -8,8 +8,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod(name = NoPoles.NAME, modid = NoPoles.MODID, version = NoPoles.VERSION)
 public class NoPoles {
-	public static final String MODID = "collapsingcolumns";
-	public static final String NAME = "Collapsing Columns";
+	public static final String MODID = "nopoles";
+	public static final String NAME = "No POles";
 	public static final String VERSION = "@VERSION@";
 
 }

@@ -19,7 +19,7 @@ public class PoleHandler {
 
 	@SubscribeEvent
 	public static void NoColumns(PlaceEvent event) {
-		
+
 		EntityPlayer player = event.getPlayer();
 
 		if (player.onGround || player.isOnLadder() || player.capabilities.allowFlying || player.isInWater())
@@ -30,18 +30,52 @@ public class PoleHandler {
 		double d0 = position.getX();
 		double d1 = position.getY();
 		double d2 = position.getZ();
-		Block block = event.getPlacedBlock().getBlock();
+//		Block block = event.getPlacedBlock().getBlock();
 		IBlockState blockstate = world.getBlockState(position);
+
+		if (Arrays.asList(PoleConfig.whitelist.blocks)
+				.contains(blockstate.getBlock().getRegistryName().toString() + ":" + blockstate.getBlock().getMetaFromState(blockstate))) {
+			// System.out.println("Block is safe");
+			return;
+		}
+
+
+		BlockPos check = position;
+		boolean destroy = true;
 		
-		//System.out.println("Block being placed is "+block.getRegistryName().toString()+":"+block.getMetaFromState(blockstate));
-		if(Arrays.asList(PoleConfig.whitelist.blocks).contains(block.getRegistryName().toString()+":"+block.getMetaFromState(blockstate))) return;
+		for (int i = 0; i < PoleConfig.nerdpole.poleHeight; i++) {
+			//System.out.println("checking block #" + i);
+			if (!world.isAirBlock(check.south()) || !world.isAirBlock(check.north()) || !world.isAirBlock(check.west())
+					|| !world.isAirBlock(check.east())) {
+				// do nothing, not a nerdpole
+				destroy=false;
+				return;
+				
+			}
+			check = check.down();
+		}
 		
-		ItemStack stack = new ItemStack(Item.getItemFromBlock(block));
-		EntityItem haha = new EntityItem(world, d0, d1 ,d2, stack);
+//		System.out.println("column is a nerdpole? ["+destroy+"]");
 		
+		if(destroy) {
+			check = position;
+			while(world.isAirBlock(check.south()) && world.isAirBlock(check.north()) && world.isAirBlock(check.west())
+					&& world.isAirBlock(check.east())) {
+				System.out.println("Destroying pole at position "+check.toString());
+				ItemStack returnStack = new ItemStack(world.getBlockState(check).getBlock());
+				EntityItem damnPole = new EntityItem(world, check.getX(), check.getY(), check.getZ(), returnStack);
+				world.spawnEntity(damnPole);
+				world.setBlockToAir(check);
+				check = check.down();
+			}
+		}
+
+		ItemStack stack = new ItemStack(blockstate.getBlock());
+		EntityItem haha = new EntityItem(world, d0, d1, d2, stack);
+
 		world.spawnEntity(haha);
-		
-		event.getWorld().setBlockToAir(event.getPos());
+
+		world.setBlockToAir(event.getPos());
 
 	}
 
