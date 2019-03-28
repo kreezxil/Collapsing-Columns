@@ -33,6 +33,9 @@ public class PoleHandler {
 //		Block block = event.getPlacedBlock().getBlock();
 		IBlockState blockstate = world.getBlockState(position);
 
+		//If player is building from underneath the block being placed, then allow the construction
+		if(player.getPosition().getY()<position.getY()) return;
+		
 		if (Arrays.asList(PoleConfig.whitelist.blocks)
 				.contains(blockstate.getBlock().getRegistryName().toString() + ":" + blockstate.getBlock().getMetaFromState(blockstate))) {
 			// System.out.println("Block is safe");
