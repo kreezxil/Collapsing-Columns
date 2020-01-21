@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "nopoles",
+  "name": "No Poles",
+  "description": "Forces players to think about how they want to get to the top! or forces the use of scaffolding if it exists.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["Kreezxil"],
+  "credits": "Kreezxil",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

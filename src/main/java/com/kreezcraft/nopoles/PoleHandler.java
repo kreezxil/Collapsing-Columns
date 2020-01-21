@@ -2,83 +2,112 @@ package com.kreezcraft.nopoles;
 
 import java.util.Arrays;
 
+import com.kreezcraft.nopoles.utility.LogHelper;
+
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod.EventBusSubscriber
 public class PoleHandler {
 
+	private static void dm(String msg) {
+		if (PoleConfig.debugMode) {
+			LogHelper.info(msg);
+		}
+	}
+
 	@SubscribeEvent
-	public static void NoColumns(PlaceEvent event) {
+	public void NoColumns(PlaceEvent event) {
+		dm("Entered PlaceEvent");
+		EntityPlayer player = event.player;
+		dm("got the player");
 
-		EntityPlayer player = event.getPlayer();
+		if (player.onGround || player.isOnLadder() || player.capabilities.allowFlying || player.isInWater()) {
 
-		if (player.onGround || player.isOnLadder() || player.capabilities.allowFlying || player.isInWater())
-			return;
-
-		World world = event.getWorld();
-		BlockPos position = event.getPos();
-		double d0 = position.getX();
-		double d1 = position.getY();
-		double d2 = position.getZ();
-//		Block block = event.getPlacedBlock().getBlock();
-		IBlockState blockstate = world.getBlockState(position);
-
-		//If player is building from underneath the block being placed, then allow the construction
-		if(player.getPosition().getY()<position.getY()) return;
-		
-		if (Arrays.asList(PoleConfig.whitelist.blocks)
-				.contains(blockstate.getBlock().getRegistryName().toString() + ":" + blockstate.getBlock().getMetaFromState(blockstate))) {
-			// System.out.println("Block is safe");
+			dm("player is on ground, ladder, in water, or flying");
 			return;
 		}
 
+		World world = event.world;
+		int bpX = event.x;
+		int bpY = event.y;
+		int bpZ = event.z;
 
-		BlockPos check = position;
+		dm("got some world data");
+
+//		double d0 = bpX;
+//		double d1 = bpY;
+//		double d2 = bpZ;
+
+		Block blockstate = world.getBlock(bpX, bpY, bpZ);
+
+		dm("got the block that triggered this event");
+		// If player is building from underneath the block being placed, then allow the
+		// construction
+		if (player.posY < bpY)
+			return;
+		dm("got the player's y position");
+
+		if (Arrays.asList(PoleConfig.whiteList)
+				.contains(Block.getIdFromBlock(blockstate) + ":" + blockstate.getDamageValue(world, bpX, bpY, bpZ))) {
+			if (PoleConfig.debugMode) {
+				System.out.println("Block is safe");
+			}
+			return;
+		}
+
 		boolean destroy = true;
-		
-		for (int i = 0; i < PoleConfig.nerdpole.poleHeight; i++) {
-			//System.out.println("checking block #" + i);
-			if (!world.isAirBlock(check.south()) || !world.isAirBlock(check.north()) || !world.isAirBlock(check.west())
-					|| !world.isAirBlock(check.east())) {
+		int checkX = bpX;
+		int checkY = bpY;
+		int checkZ = bpZ;
+
+		for (int i = 0; i < PoleConfig.poleHeight; i++) {
+			if (PoleConfig.debugMode) {
+				System.out.println("checking block #" + i);
+			}
+
+			if (!world.isAirBlock(checkX - 1, checkY, checkZ) || !world.isAirBlock(checkX + 1, checkY, checkZ)
+					|| !world.isAirBlock(checkX, checkY, checkZ - 1) || !world.isAirBlock(checkX, checkY, checkZ + 1)) {
 				// do nothing, not a nerdpole
-				destroy=false;
+				destroy = false;
 				return;
-				
+
 			}
-			check = check.down();
-		}
-		
-//		System.out.println("column is a nerdpole? ["+destroy+"]");
-		
-		if(destroy) {
-			check = position;
-			while(world.isAirBlock(check.south()) && world.isAirBlock(check.north()) && world.isAirBlock(check.west())
-					&& world.isAirBlock(check.east())) {
-				System.out.println("Destroying pole at position "+check.toString());
-				ItemStack returnStack = new ItemStack(world.getBlockState(check).getBlock());
-				EntityItem damnPole = new EntityItem(world, check.getX(), check.getY(), check.getZ(), returnStack);
-				world.spawnEntity(damnPole);
-				world.setBlockToAir(check);
-				check = check.down();
-			}
+			checkY = checkY - 1;
 		}
 
-		ItemStack stack = new ItemStack(blockstate.getBlock());
-		EntityItem haha = new EntityItem(world, d0, d1, d2, stack);
+		if (PoleConfig.debugMode) {
+			System.out.println("column is a nerdpole? [" + destroy + "]");
+		}
 
-		world.spawnEntity(haha);
+		if (destroy) {
+			checkX = bpX;
+			checkY = bpY;
+			checkZ = bpZ;
 
-		world.setBlockToAir(event.getPos());
+			while (world.isAirBlock(checkX - 1, checkY, checkZ) || world.isAirBlock(checkX + 1, checkY, checkZ)
+					|| world.isAirBlock(checkX, checkY, checkZ - 1) || world.isAirBlock(checkX, checkY, checkZ + 1)) {
+				if (PoleConfig.debugMode) {
+					System.out.println("Destroying pole at position x:" + checkX + " y:" + checkY + " z:" + checkZ);
+				}
+				ItemStack returnStack = new ItemStack(world.getBlock(checkX, checkY, checkZ));
+				EntityItem damnPole = new EntityItem(world, checkX, checkY, checkZ, returnStack);
+				world.spawnEntityInWorld(damnPole);
+				world.setBlockToAir(checkX, checkY, checkZ);
+				checkY = checkY - 1;
+			}
+		}
+// is or was this even necessary?
+//		ItemStack stack = new ItemStack(blockstate.getBlock());
+//		EntityItem haha = new EntityItem(world, d0, d1, d2, stack);
+//
+//		world.spawnEntityInWorld(haha);
+//
+//		world.setBlockToAir(event.getPos());
 
 	}
 

@@ -1,29 +1,53 @@
 package com.kreezcraft.nopoles;
 
-import net.minecraftforge.common.config.Config;
+import java.io.File;
 
-@Config(modid = NoPoles.MODID, category = "")
+import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.common.config.Configuration;
+
 public class PoleConfig {
 
-	@Config.Comment({ "Exempt Blocks" })
-	@Config.Name("Blocks")
-	public static Whitelist whitelist = new Whitelist();
-	
-	@Config.Comment({"Pole Identification aka what defines the pole?"})
-	@Config.Name("Nerd Pole")
-	public static NerdPole nerdpole = new NerdPole();
+	public static Configuration configuration;
 
-	public static class Whitelist {
-		@Config.Comment({ "Please enter blocks to be ignored 1 per entry", "the format is modid:block_name:dmg\nIf the block has no meta or dmg value then give it a 0",
-				"example:", "notenoughscaffold:wooden_scaffold" })
-		public String[] blocks = {"notenoughscaffold:wooden_scaffold:0","notenoughscaffold:iron_scaffold:0","minecraft:sand:0","minecraft:sand:1","minecraft:gravel:0"};
-		
+	public static String[] whiteList;
+	public static boolean debugMode;
+	public static int poleHeight;
+
+	public static void init(String configDir) {
+		if (configuration == null) {
+			File path = new File(configDir + "/" + NoPoles.MODID + ".cfg");
+
+			configuration = new Configuration(path);
+			loadConfiguration();
+		}
+
 	}
-	
-	public static class NerdPole {
-		
-		@Config.Comment({"How many blocks tall is a pole before it is considered a nerdpole?\n","Anything higher than this will cause the pole to be destroyed.\n","Default: 10"})
-		public int poleHeight = 10;
-		
+
+	private static void loadConfiguration() {
+		debugMode = configuration.get(Configuration.CATEGORY_GENERAL, "debugMode", false, "Is debugMode active?")
+				.getBoolean();
+
+		whiteList = configuration.get(Configuration.CATEGORY_GENERAL, "whiteList", new String[] {},
+				"Only these blocks will be allowed for building straight up.\nSuggest adding the scaffold block ids here.\nformat is ###:#")
+				.getStringList();
+
+		poleHeight = configuration.getInt("poleHeight", Configuration.CATEGORY_GENERAL, 10, 0, 256,
+				"10 seems like the sane value.");
+
+		if (configuration.hasChanged()) {
+			configuration.save();
+		}
+	}
+
+	@SubscribeEvent
+	public void onConfigurationChangeEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
+		if (event.modID.equalsIgnoreCase(NoPoles.MODID)) {
+			loadConfiguration();
+		}
+	}
+
+	public static Configuration getConfiguration() {
+		return configuration;
 	}
 }
