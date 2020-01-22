@@ -50,7 +50,7 @@ public class PoleConfig {
 				"Recommend adding scaffolding, gravel, and sand variants as those can",
 				"easily be taken down.",
 				"use the format modid:blockid")
-				.defineList("whiteList",Arrays.asList(new String[]{"minecraft:sand", "minecraft:redsand", "minecraft:gravel"}),s -> s instanceof String);
+				.defineList("whiteList",Arrays.asList(new String[]{"minecraft:sand", "minecraft:red_sand", "minecraft:gravel"}),s -> s instanceof String);
     }
 
 

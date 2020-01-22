@@ -14,7 +14,9 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.Arrays;
 
-@Mod.EventBusSubscriber
+import static com.kreezcraft.nopoles.NoPoles.*;
+
+@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PoleHandler {
     private void dm(PlayerEntity p, String msg) {
         if (PoleConfig.debugMode.get()) {
@@ -26,7 +28,6 @@ public class PoleHandler {
     public void NoColumns(PlayerInteractEvent event) {
 
         PlayerEntity player = event.getPlayer();
-        dm(player, "Got the player");
         if (player == null) {
 //            dm(player, "I think it's null!");
             return;
@@ -44,12 +45,11 @@ public class PoleHandler {
         double d2 = position.getZ();
 
         BlockState blockstate = world.getBlockState(position);
-        dm(player, "got some world data");
         //If player is building from underneath the block being placed, then allow the construction
         if (player.getPosition().getY() < position.getY()) return;
 
-        if (Arrays.asList(PoleConfig.whiteList.get())
-                //.contains(blockstate.getBlock().getRegistryName().toString() + ":" + blockstate.getBlock().getMetaFromState(blockstate))) {
+        dm(player,"Found Block:"+blockstate.getBlock().getRegistryName().toString());
+        if (PoleConfig.whiteList.get()
                 .contains(blockstate.getBlock().getRegistryName().toString())) {
             dm(player, "Block is safe");
             return;

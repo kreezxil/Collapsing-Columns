@@ -1,6 +1,9 @@
 package com.kreezcraft.nopoles;
 
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LifecycleEventProvider;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -38,6 +41,7 @@ public class NoPoles {
 	}
 
 	public NoPoles() {
+		MinecraftForge.EVENT_BUS.register(new PoleHandler());
 		//ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PoleConfig.CLIENT_CONFIG);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PoleConfig.COMMON_CONFIG);
 
@@ -46,6 +50,8 @@ public class NoPoles {
 
 		//PoleConfig.loadConfig(PoleConfig.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve("client.toml"));
 		PoleConfig.loadConfig(PoleConfig.COMMON_CONFIG, FMLPaths.CONFIGDIR.get().resolve(MODID+"-common.toml"));
+
+
 	}
 
 }
