@@ -19,10 +19,10 @@ public class PoleConfig {
     public static final String CAT_GEN = "general";
 
     private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
-    private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
+    //private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
 
     public static ForgeConfigSpec COMMON_CONFIG;
-    public static ForgeConfigSpec CLIENT_CONFIG;
+    //public static ForgeConfigSpec CLIENT_CONFIG;
 
 
     public static ForgeConfigSpec.BooleanValue debugMode;
@@ -35,9 +35,9 @@ public class PoleConfig {
 
         setupConfigBlock();
 
-        COMMON_BUILDER.pop();
+      //  COMMON_BUILDER.pop();
         COMMON_CONFIG = COMMON_BUILDER.build();
-        CLIENT_CONFIG = CLIENT_BUILDER.build();
+       // CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 
     private static void setupConfigBlock() {
@@ -46,7 +46,10 @@ public class PoleConfig {
 		poleHeight = COMMON_BUILDER.comment("At what height is it a nerdpole? Default: 10")
 				.defineInRange("poleHeight",10,0,256);
 		//List<String> blocks = Arrays.asList(new String[]{"minecraft:sand", "minecraft:redsand", "minecraft:gravel"});
-		whiteList = COMMON_BUILDER.comment("Lost of blockID's to allow in making poles.","Recommend adding scaffolding, gravel, and sand variants as those can","easily be taken down.","use the format modid:blockid")
+		whiteList = COMMON_BUILDER.comment("List of blockID's to allow in making poles.",
+				"Recommend adding scaffolding, gravel, and sand variants as those can",
+				"easily be taken down.",
+				"use the format modid:blockid")
 				.defineList("whiteList",Arrays.asList(new String[]{"minecraft:sand", "minecraft:redsand", "minecraft:gravel"}),s -> s instanceof String);
     }
 
