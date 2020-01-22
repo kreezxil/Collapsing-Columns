@@ -1,29 +1,74 @@
 package com.kreezcraft.nopoles;
 
-import net.minecraftforge.common.config.Config;
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.WritingMode;
+import com.sun.org.apache.xerces.internal.xs.StringList;
+import net.minecraft.block.Block;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 
-@Config(modid = NoPoles.MODID, category = "")
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+
+@Mod.EventBusSubscriber
 public class PoleConfig {
 
-	@Config.Comment({ "Exempt Blocks" })
-	@Config.Name("Blocks")
-	public static Whitelist whitelist = new Whitelist();
-	
-	@Config.Comment({"Pole Identification aka what defines the pole?"})
-	@Config.Name("Nerd Pole")
-	public static NerdPole nerdpole = new NerdPole();
+    public static final String CAT_GEN = "general";
 
-	public static class Whitelist {
-		@Config.Comment({ "Please enter blocks to be ignored 1 per entry", "the format is modid:block_name:dmg\nIf the block has no meta or dmg value then give it a 0",
-				"example:", "notenoughscaffold:wooden_scaffold" })
-		public String[] blocks = {"notenoughscaffold:wooden_scaffold:0","notenoughscaffold:iron_scaffold:0","minecraft:sand:0","minecraft:sand:1","minecraft:gravel:0"};
-		
+    private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
+    private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
+
+    public static ForgeConfigSpec COMMON_CONFIG;
+    public static ForgeConfigSpec CLIENT_CONFIG;
+
+
+    public static ForgeConfigSpec.BooleanValue debugMode;
+    public static ForgeConfigSpec.IntValue poleHeight;
+    public static ForgeConfigSpec.ConfigValue<List<? extends String>> whiteList;
+
+    static {
+        COMMON_BUILDER.comment("General Settings").push(CAT_GEN);
+        COMMON_BUILDER.pop();
+
+        setupConfigBlock();
+
+        COMMON_BUILDER.pop();
+        COMMON_CONFIG = COMMON_BUILDER.build();
+        CLIENT_CONFIG = CLIENT_BUILDER.build();
+    }
+
+    private static void setupConfigBlock() {
+        debugMode = COMMON_BUILDER.comment("If you don't think it is working, turn on debug mode")
+                .define("debugMode", false);
+		poleHeight = COMMON_BUILDER.comment("At what height is it a nerdpole? Default: 10")
+				.defineInRange("poleHeight",10,0,256);
+		//List<String> blocks = Arrays.asList(new String[]{"minecraft:sand", "minecraft:redsand", "minecraft:gravel"});
+		whiteList = COMMON_BUILDER.comment("Lost of blockID's to allow in making poles.","Recommend adding scaffolding, gravel, and sand variants as those can","easily be taken down.","use the format modid:blockid")
+				.defineList("whiteList",Arrays.asList(new String[]{"minecraft:sand", "minecraft:redsand", "minecraft:gravel"}),s -> s instanceof String);
+    }
+
+
+	public static void loadConfig(ForgeConfigSpec spec, Path path) {
+
+		final CommentedFileConfig configData = CommentedFileConfig.builder(path)
+				.sync()
+				.autosave()
+				.writingMode(WritingMode.REPLACE)
+				.build();
+
+		configData.load();
+		spec.setConfig(configData);
 	}
-	
-	public static class NerdPole {
-		
-		@Config.Comment({"How many blocks tall is a pole before it is considered a nerdpole?\n","Anything higher than this will cause the pole to be destroyed.\n","Default: 10"})
-		public int poleHeight = 10;
-		
+
+	@SubscribeEvent
+	public static void onLoad(final ModConfig.Loading configEvent) {
+
+	}
+
+	@SubscribeEvent
+	public static void onReload(final ModConfig.ConfigReloading configEvent) {
 	}
 }
