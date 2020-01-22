@@ -2,8 +2,6 @@ package com.kreezcraft.nopoles;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import com.sun.org.apache.xerces.internal.xs.StringList;
-import net.minecraft.block.Block;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
