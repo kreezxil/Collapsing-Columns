@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @Mod(name = NoPoles.NAME, modid = NoPoles.MODID, version = NoPoles.VERSION, acceptableRemoteVersions = "*", dependencies = "required-after:forge@[14.23.5.2847,)")
 public class NoPoles {
     public static final String MODID = "nopoles";
-    public static final String NAME = "No POles";
+    public static final String NAME = "No Poles";
     public static final String VERSION = "@VERSION@";
 
     @Mod.Instance

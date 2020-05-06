@@ -1,5 +1,7 @@
 package com.kreezcraft.nopoles;
 
+import java.util.Arrays;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,11 +10,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.BlockEvent.PlaceEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import java.util.Arrays;
 
 @Mod.EventBusSubscriber
 public class PoleHandler {
@@ -25,6 +24,9 @@ public class PoleHandler {
     @SubscribeEvent
     public void NoColumns(BlockEvent.EntityPlaceEvent event) {
 
+    	if(!(event.getEntity() instanceof EntityPlayer)) return;
+    	if(event.getWorld().isRemote) return;
+    	
         EntityPlayer player = (EntityPlayer) event.getEntity();
         dm(player,"I got you babe!");
         if (player.onGround || player.isOnLadder() || player.capabilities.allowFlying || player.isInWater())
@@ -32,9 +34,6 @@ public class PoleHandler {
 
         World world = event.getWorld();
         BlockPos position = event.getPos();
-        double d0 = position.getX();
-        double d1 = position.getY();
-        double d2 = position.getZ();
 
         IBlockState blockstate = world.getBlockState(position);
 
@@ -70,8 +69,9 @@ public class PoleHandler {
             check = position;
             while (world.isAirBlock(check.south()) && world.isAirBlock(check.north()) && world.isAirBlock(check.west())
                     && world.isAirBlock(check.east())) {
-                System.out.println("Destroying pole at position " + check.toString());
-                ItemStack returnStack = new ItemStack(world.getBlockState(check).getBlock());
+                if(PoleConfig.debugmode.debugMode) System.out.println("Destroying pole at position " + check.toString());
+                IBlockState toRemove = world.getBlockState(check);
+                ItemStack returnStack = new ItemStack(toRemove.getBlock(), 1, toRemove.getBlock().getMetaFromState(toRemove));
                 EntityItem damnPole = new EntityItem(world, check.getX(), check.getY(), check.getZ(), returnStack);
                 world.spawnEntity(damnPole);
                 world.setBlockToAir(check);
